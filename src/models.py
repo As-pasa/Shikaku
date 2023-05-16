@@ -8,12 +8,17 @@ from utils.mathUtils import get_divider_pairs
 class Anchor:
     x: int
     y: int
+    id: int
     size: int
 
 
 @dataclasses.dataclass
 class Cell:
     is_occupied: bool
+    reachable_by: list[Anchor] = dataclasses.field(default_factory=list)
+
+    def clear_reachable(self):
+        self.reachable_by = []
 
 
 @dataclasses.dataclass
@@ -28,23 +33,27 @@ class Rectangle:
             for x in range(self.width):
                 yield self.x + x, self.y + y
 
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y and self.height == other.height and self.width == other.width
+
 
 class AnchorTable:
     def __init__(self, data: str):
         self.grid = []
         self.size = len(data.splitlines())
         self.anchors = AnchorTable.get_anchor(self, data)
+
     def get_anchor(self, content: str):
         anchors = []
         lines = content.splitlines()
         data = [[value for value in map(int, row.split())]
-                  for row in lines]
-
+                for row in lines]
+        idd: int = 0
         for x in range(self.size):
             for y in range(self.size):
                 if data[y][x] != 0:
-
-                    z=Anchor(x, y, data[y][x])
+                    z = Anchor(x, y, idd, data[y][x])
+                    idd += 1
                     anchors.append(z)
         return anchors
 
@@ -60,15 +69,25 @@ class SolvingGrid:
     def is_cell_occupied(self, x, y) -> bool:
         return self.matrix[y * self.size + x].is_occupied
 
+    def get_anchors_that_reach_cell(self, x, y):
+        return self.matrix[y * self.size + x].reachable_by
+
     def mark_occupied(self, x, y) -> None:
         self.matrix[y * self.size + x].is_occupied = True
 
+    def mark_reachable_by(self, x, y, anchor: Anchor):
+        self.matrix[y * self.size + x].reachable_by.append(anchor)
+
+    def clear_all_reachable(self):
+        for i in self.matrix:
+            i.clear_reachable()
+
     def collide(self, rect: Rectangle) -> [tuple[int, int]]:
         ans = []
-        a=[i for i in rect.get_inner_points()]
-        for x,y in a:
-            if self.is_cell_occupied(x,y):
-                    ans.append((x,y))
+        a = [i for i in rect.get_inner_points()]
+        for x, y in a:
+            if self.is_cell_occupied(x, y):
+                ans.append((x, y))
         return ans
 
     def collideAll(self, rect: Rectangle) -> [tuple[int, int]]:
@@ -112,9 +131,33 @@ class AnchorVariantsResolver:
                         ans.append(r)
         return ans
 
-    def filter_existing_variants(self) -> [Rectangle]:
+    def _inner_filter(self) -> [Rectangle]:
+
         for rect in self.variants:
+
             collide_entries: tuple[int, int] = self.grid.collide(rect)
+
             if len(collide_entries) > 1:
                 self.variants.remove(rect)
+            k=self.grid.collideAll(rect)
+            for x, y in k:
+                ancss = self.grid.get_anchors_that_reach_cell(x, y)
+                if len(ancss) == 1 and (x, y) != (self.anchor.x, self.anchor.y):
+                    self.variants = [rect]
+
+                    return self.variants
         return self.variants
+
+    def filter_existing_variants(self) -> [Rectangle]:
+
+        self._inner_filter()
+
+        if len(self.variants) == 1:
+            for x, y, in self.grid.collideAll(self.variants[0]):
+                self.grid.mark_occupied(x, y)
+        return self.variants
+
+    def mark_reachable(self) -> None:
+        for rect in self.variants:
+            for x, y in rect.get_inner_points():
+                self.grid.mark_reachable_by(x, y, self.anchor)

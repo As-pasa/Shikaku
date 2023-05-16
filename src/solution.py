@@ -21,21 +21,24 @@ class BoardSolution:
             solvers.append(solver)
 
         while solvers:
-            self.grid.print()
+            for solver in solvers+finalized:
+                solver.mark_reachable()
+
+
             for solver in solvers:
 
                 rects = solver.filter_existing_variants()
 
                 solver.variants = rects
                 if len(rects) == 1:
-                    for x, y, in self.grid.collideAll(rects[0]):
-                        self.grid.mark_occupied(x, y)
+
                     finalized.append(solver)
                     solvers.remove(solver)
+            self.grid.clear_all_reachable()
 
         for i in range(len(finalized)):
             self.rectangles += finalized[i].variants
-        return sorted(self.rectangles, key=lambda rect: rect.x)
+        return sorted(self.rectangles,key=lambda rect: (rect.x,rect.y,rect.width,rect.height))
 
     def print_solution(self):
         rects = self.solve()
@@ -44,7 +47,7 @@ class BoardSolution:
         for rect in rects:
             for i in range(rect.x, rect.x + rect.width):
                 for j in range(rect.y, rect.y + rect.height):
-                    solve_grid[i][j] = n
+                    solve_grid[j][i] = n
             n += 1
         res = ''
         for line in solve_grid:
