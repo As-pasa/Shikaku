@@ -1,6 +1,6 @@
-from src.models import SolvingGrid
-from src.models import AnchorTable
-from src.models import AnchorVariantsResolver
+from models import SolvingGrid
+from models import AnchorTable
+from models import AnchorVariantsResolver
 
 
 class BoardSolution:
@@ -31,13 +31,15 @@ class BoardSolution:
         return sorted(self.rectangles, key=lambda rect: rect.x)
 
     def print_solution(self):
-        pass
-        # rects = self.solve()
-        # solve_grid = [[0 for x in range(self.size)] for y in range(self.size)]
-        # n = 1
-        # for rect in rects:
-        #     for i in range(rect.y, rect.width):
-        #         for j in range(rect.x, rect.height):
-        #             solve_grid[i][j] = n
-        #     n += 1
-        # print(solve_grid)
+        rects = self.solve()
+        solve_grid = [[0 for _ in range(self.size)] for _ in range(self.size)]
+        n = 1
+        for rect in rects:
+            for i in range(rect.x, rect.x + rect.width):
+                for j in range(rect.y, rect.y + rect.height):
+                    solve_grid[i][j] = n
+            n += 1
+        res = ''
+        for line in solve_grid:
+            res += f'{" ".join(map(str, line))}\n'
+        return print(res)
