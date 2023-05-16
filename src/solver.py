@@ -3,7 +3,7 @@ import sys
 
 from parse_argument import *
 from check_files import *
-from models import AnchorTable
+from models import AnchorsFileReader
 from solution import BoardSolution
 from dataclasses import dataclass
 from typing import ClassVar
@@ -40,7 +40,7 @@ class Solver:
                     if not check_size_board(file_content):
                         print("The matrix in the file must be square!")
                         sys.exit(1)
-                    anchors = BoardSolution(AnchorTable(file_content))
+                    anchors = BoardSolution(AnchorsFileReader(file_content))
                     anchors.print_solution()
 
 

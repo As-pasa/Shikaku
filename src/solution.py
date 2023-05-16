@@ -1,12 +1,12 @@
 import time
 
 from models import SolvingGrid
-from models import AnchorTable
+from models import AnchorsFileReader
 from models import AnchorVariantsResolver
 
 
 class BoardSolution:
-    def __init__(self, table: AnchorTable):
+    def __init__(self, table: AnchorsFileReader):
         self.anchors = table.anchors
         self.size = table.size
         self.grid = SolvingGrid(self.size, self.anchors)
