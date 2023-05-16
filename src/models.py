@@ -43,6 +43,13 @@ class SolvingGrid:
                     ans.append((rect.x + x, rect.y + y))
         return ans
 
+    def collideAll(self, rect: Rectangle) -> [tuple[int, int]]:
+        ans = []
+        for y in range(rect.height):
+            for x in range(rect.width):
+                ans.append((rect.x + x, rect.y + y))
+        return ans
+
     def is_rect_valid(self, rect: Rectangle) -> bool:
 
         return 0 <= rect.x < self.size and \
@@ -80,5 +87,9 @@ class AnchorVariantsResolver:
                         ans.append(r)
         return ans
 
-
-
+    def filter_existing_variants(self) -> [Rectangle]:
+        for rect in self.variants:
+            collide_entries: tuple[int, int] = self.grid.collide(rect)
+            if len(collide_entries) > 1:
+                self.variants.remove(rect)
+        return self.variants
