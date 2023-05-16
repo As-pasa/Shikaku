@@ -1,3 +1,5 @@
+import time
+
 from models import SolvingGrid
 from models import AnchorTable
 from models import AnchorVariantsResolver
@@ -17,15 +19,20 @@ class BoardSolution:
             solver = AnchorVariantsResolver(i, self.grid)
             solver.variants = solver.get_rectangle_variants()
             solvers.append(solver)
+
         while solvers:
+            self.grid.print()
             for solver in solvers:
+
                 rects = solver.filter_existing_variants()
+
                 solver.variants = rects
                 if len(rects) == 1:
                     for x, y, in self.grid.collideAll(rects[0]):
                         self.grid.mark_occupied(x, y)
                     finalized.append(solver)
                     solvers.remove(solver)
+
         for i in range(len(finalized)):
             self.rectangles += finalized[i].variants
         return sorted(self.rectangles, key=lambda rect: rect.x)

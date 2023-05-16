@@ -1,7 +1,7 @@
 import dataclasses
 import math
 
-from src.utils.mathUtils import get_divider_pairs
+from utils.mathUtils import get_divider_pairs
 
 
 @dataclasses.dataclass
@@ -34,16 +34,18 @@ class AnchorTable:
         self.grid = []
         self.size = len(data.splitlines())
         self.anchors = AnchorTable.get_anchor(self, data)
-
     def get_anchor(self, content: str):
         anchors = []
         lines = content.splitlines()
         data = [[value for value in map(int, row.split())]
                   for row in lines]
+
         for x in range(self.size):
             for y in range(self.size):
-                if data[x][y] != 0:
-                    anchors.append(Anchor(x, y, data[x][y]))
+                if data[y][x] != 0:
+
+                    z=Anchor(x, y, data[y][x])
+                    anchors.append(z)
         return anchors
 
 
