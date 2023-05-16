@@ -1,5 +1,7 @@
 import unittest
-from models import Anchor, AnchorVariantsResolver, Rectangle, SolvingGrid
+from src.models import AnchorVariantsResolver, Rectangle, SolvingGrid
+from src.solution import BoardSolution
+from src.models import AnchorTable
 
 
 # from ..models import Anchor, AnchorVariantsResolver, Rectangle, SolvingGrid
@@ -7,21 +9,17 @@ from models import Anchor, AnchorVariantsResolver, Rectangle, SolvingGrid
 
 class MyTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.ancs = [
-            Anchor(0, 0, 2),
-            Anchor(1, 0, 4),
-            Anchor(1, 1, 3),
-            Anchor(4, 1, 4),
-            Anchor(0, 2, 4),
-            Anchor(1, 3, 2),
-            Anchor(2, 3, 2),
-            Anchor(3, 3, 2),
-            Anchor(1, 4, 2)
-        ]
-        self.grid = SolvingGrid(5, self.ancs)
+        self.table = AnchorTable(
+            '2 0 4 0 0\n'
+            '4 3 0 2 2\n'
+            '0 0 0 2 0\n'
+            '0 0 0 2 0\n'
+            '0 4 0 0 0'
+        )
+        self.ancs = self.table.anchors
+        self.grid = SolvingGrid(self.table.size, self.ancs)
 
     def test_something(self):
-
         singles = []
         for i in self.ancs:
             solver = AnchorVariantsResolver(i, self.grid)
@@ -29,7 +27,7 @@ class MyTestCase(unittest.TestCase):
             if len(solver.variants) == 1:
                 singles.append(solver.anchor)
 
-        self.assertEqual(singles, [self.ancs[0], self.ancs[1]])  # add assertion here
+        self.assertEqual(singles, [self.ancs[0], self.ancs[2]])  # add assertion here
 
     def test_collide(self):
         rect = Rectangle(3, 0, 1, 3)
@@ -42,30 +40,17 @@ class MyTestCase(unittest.TestCase):
             [1, 1, 1])
 
     def test_rect_resolving(self):
-        solvers = []
-        finalized = []
-        for i in self.ancs:
-            solver = AnchorVariantsResolver(i, self.grid)
-            solver.variants = solver.get_rectangle_variants()
-
-            solvers.append(solver)
-        while solvers:
-            for solver in solvers:
-                rects = solver.filter_existing_variants()
-                solver.variants = rects
-                if len(rects) == 1:
-                    for x, y, in self.grid.collideAll(rects[0]):
-                        self.grid.mark_occupied(x, y)
-                    finalized.append(solver)
-                    solvers.remove(solver)
-        ans = []
-        for i in range(len(finalized)):
-            ans += finalized[i].variants
-        self.assertEqual(ans, [Rectangle(x=0, y=0, width=1, height=2), Rectangle(x=1, y=1, width=3, height=1),
-                               Rectangle(x=0, y=2, width=4, height=1), Rectangle(x=2, y=3, width=1, height=2),
-                               Rectangle(x=0, y=4, width=2, height=1), Rectangle(x=1, y=0, width=4, height=1),
-                               Rectangle(x=0, y=3, width=2, height=1), Rectangle(x=4, y=1, width=1, height=4),
-                               Rectangle(x=3, y=3, width=1, height=2)])
+        ans = BoardSolution(self.table).solve()
+        b = BoardSolution(self.table).print_solution()
+        self.assertEqual(ans, [Rectangle(x=0, y=0, width=1, height=2),
+                               Rectangle(x=0, y=2, width=4, height=1),
+                               Rectangle(x=0, y=3, width=2, height=1),
+                               Rectangle(x=0, y=4, width=2, height=1),
+                               Rectangle(x=1, y=0, width=4, height=1),
+                               Rectangle(x=1, y=1, width=3, height=1),
+                               Rectangle(x=2, y=3, width=1, height=2),
+                               Rectangle(x=3, y=3, width=1, height=2),
+                               Rectangle(x=4, y=1, width=1, height=4)])
 
 
 if __name__ == '__main__':
