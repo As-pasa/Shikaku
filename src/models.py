@@ -32,17 +32,18 @@ class Rectangle:
 class AnchorTable:
     def __init__(self, data: str):
         self.grid = []
-        self.anchors = AnchorTable.get_anchor(data)
-        self.size = int(math.sqrt(len(data)))
+        self.size = len(data.splitlines())
+        self.anchors = AnchorTable.get_anchor(self, data)
 
-    @staticmethod
-    def get_anchor(content: str):
+    def get_anchor(self, content: str):
         anchors = []
-        size = int(math.sqrt(len(content)))
-        for x in range(size):
-            for y in range(size):
-                if int(content[x][y]) != 0:
-                    anchors.append(Anchor(x, y, int(content[x][y])))
+        lines = content.splitlines()
+        data = [[value for value in map(int, row.split())]
+                  for row in lines]
+        for x in range(self.size):
+            for y in range(self.size):
+                if data[x][y] != 0:
+                    anchors.append(Anchor(x, y, data[x][y]))
         return anchors
 
 
