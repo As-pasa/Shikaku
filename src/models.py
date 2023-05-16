@@ -23,6 +23,11 @@ class Rectangle:
     width: int
     height: int
 
+    def get_inner_points(self) -> [tuple[int, int]]:
+        for y in range(self.height):
+            for x in range(self.width):
+                yield self.x + x, self.y + y
+
 
 class AnchorTable:
     def __init__(self, data: str):
@@ -57,25 +62,21 @@ class SolvingGrid:
 
     def collide(self, rect: Rectangle) -> [tuple[int, int]]:
         ans = []
-        for y in range(rect.height):
-            for x in range(rect.width):
-                if self.is_cell_occupied(rect.x + x, rect.y + y):
-                    ans.append((rect.x + x, rect.y + y))
+        a=[i for i in rect.get_inner_points()]
+        for x,y in a:
+            if self.is_cell_occupied(x,y):
+                    ans.append((x,y))
         return ans
 
     def collideAll(self, rect: Rectangle) -> [tuple[int, int]]:
-        ans = []
-        for y in range(rect.height):
-            for x in range(rect.width):
-                ans.append((rect.x + x, rect.y + y))
-        return ans
+        return [i for i in rect.get_inner_points()]
 
     def is_rect_valid(self, rect: Rectangle) -> bool:
 
         return 0 <= rect.x < self.size and \
-               0 <= rect.y < self.size and \
-               0 <= rect.x + rect.width - 1 < self.size \
-               and 0 <= rect.y + rect.height - 1 < self.size
+            0 <= rect.y < self.size and \
+            0 <= rect.x + rect.width - 1 < self.size \
+            and 0 <= rect.y + rect.height - 1 < self.size
 
     def print(self):
         ans = ""
@@ -108,11 +109,9 @@ class AnchorVariantsResolver:
                         ans.append(r)
         return ans
 
-
     def filter_existing_variants(self) -> [Rectangle]:
         for rect in self.variants:
             collide_entries: tuple[int, int] = self.grid.collide(rect)
             if len(collide_entries) > 1:
                 self.variants.remove(rect)
         return self.variants
-
