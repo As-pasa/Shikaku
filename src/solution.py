@@ -51,5 +51,10 @@ class BoardSolution:
             n += 1
         res = ''
         for line in solve_grid:
-            res += f'{" ".join(map(str, line))}\n'
+            if len(rects) < 10:
+                res += f'{" ".join(map(str, line))}\n'
+            else:
+                for cell in line:
+                    res += f'{cell} ' if len(str(cell)) > 1 else f'0{cell} '
+                res = res[:-1] + '\n'
         return print(res)
