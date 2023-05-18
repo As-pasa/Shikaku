@@ -10,14 +10,15 @@ def check_file_extension(file: str) -> str:
 
 def check_file_content(file_content: str) -> bool:
     """Проверка содержимого файла"""
-    line_content = filter(lambda x: x, map(str.strip, file_content))
-    return all(value.isdigit() for value in line_content)
+    lines = file_content.split('\n')
+    matrix = [value for row in lines for value in row.split()]
+    return all(value.isdigit() for value in matrix)
 
 
 def check_max_element(file_content: str) -> bool:
     """Проверка, что в файле нет элементов больших, чем площадь доски"""
     lines = file_content.split('\n')
     size = len(lines)
-    square_size = size*size
+    square_size = size * size
     matrix = [value for row in lines for value in map(int, row.split())]
     return all(element <= square_size for element in matrix)

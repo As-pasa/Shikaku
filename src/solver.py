@@ -5,7 +5,6 @@ from check_files import *
 from models import AnchorsFileReader
 from solution import BoardSolution
 from dataclasses import dataclass
-from typing import ClassVar
 
 
 @dataclass
