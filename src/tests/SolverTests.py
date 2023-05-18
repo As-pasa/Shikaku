@@ -22,7 +22,8 @@ class SolverTest(unittest.TestCase):
         for x, y in self.grid.collideAll(rect):
             self.grid.mark_occupied(x, y)
         self.assertEqual(
-            [self.grid.is_cell_occupied(3, 0), self.grid.is_cell_occupied(3, 1),
+            [self.grid.is_cell_occupied(3, 0),
+             self.grid.is_cell_occupied(3, 1),
              self.grid.is_cell_occupied(3, 2)],
             [1, 1, 1])
 
