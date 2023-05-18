@@ -4,10 +4,7 @@ from src.solution import BoardSolution
 from src.models import AnchorsFileReader
 
 
-# from ..models import Anchor, AnchorVariantsResolver, Rectangle, SolvingGrid
-
-
-class MyTestCase(unittest.TestCase):
+class SolverTest(unittest.TestCase):
     def setUp(self) -> None:
         self.table = AnchorsFileReader(
             '2 0 4 0 0\n'
@@ -25,7 +22,8 @@ class MyTestCase(unittest.TestCase):
         for x, y in self.grid.collideAll(rect):
             self.grid.mark_occupied(x, y)
         self.assertEqual(
-            [self.grid.is_cell_occupied(3, 0), self.grid.is_cell_occupied(3, 1), self.grid.is_cell_occupied(3, 2)],
+            [self.grid.is_cell_occupied(3, 0), self.grid.is_cell_occupied(3, 1),
+             self.grid.is_cell_occupied(3, 2)],
             [1, 1, 1])
 
     def test_rect_resolving(self):
@@ -40,7 +38,8 @@ class MyTestCase(unittest.TestCase):
                     Rectangle(x=2, y=0, width=1, height=4),
                     Rectangle(x=4, y=0, width=1, height=2),
                     Rectangle(x=3, y=0, width=1, height=2),
-                    Rectangle(x=3, y=2, width=2, height=1)], key=lambda rect: (rect.x, rect.y, rect.width, rect.height))
+                    Rectangle(x=3, y=2, width=2, height=1)],
+                   key=lambda rect: (rect.x, rect.y, rect.width, rect.height))
 
         self.assertEqual(ans, z)
 
@@ -64,8 +63,10 @@ class MyTestCase(unittest.TestCase):
         ]
         for i in resolvers:
             i.get_rectangle_variants()
-        self.assertEqual(resolvers[0].variants, [Rectangle(0, 0, 1, 2), Rectangle(0, 0, 2, 1)])
-        self.assertEqual(resolvers[1].variants, [Rectangle(2, 2, 2, 2), Rectangle(0, 3, 4, 1)])
+        self.assertEqual(resolvers[0].variants,
+                         [Rectangle(0, 0, 1, 2), Rectangle(0, 0, 2, 1)])
+        self.assertEqual(resolvers[1].variants,
+                         [Rectangle(2, 2, 2, 2), Rectangle(0, 3, 4, 1)])
 
     def test_search_responsible_points(self):
         solvers = [AnchorVariantsResolver(i, self.grid) for i in self.ancs]

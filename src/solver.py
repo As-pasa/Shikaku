@@ -10,7 +10,7 @@ from typing import ClassVar
 
 @dataclass
 class ParserArguments:
-    PARSER: ClassVar = argparse.ArgumentParser("Shikaku solver")
+    PARSER = argparse.ArgumentParser("Shikaku solver")
     PARSER.add_argument('file',
                         type=check_file_extension,
                         help='Puzzle file, which must have a txt '

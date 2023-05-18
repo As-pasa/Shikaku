@@ -7,6 +7,7 @@ from models import AnchorVariantsResolver
 
 class BoardSolution:
     """Класс, решающий доску с головоломкой Shikaku"""
+
     def __init__(self, table: AnchorsFileReader):
         self.anchors = table.anchors
         self.size = table.size
@@ -36,7 +37,7 @@ class BoardSolution:
         for i in range(len(finalized)):
             self.rectangles += finalized[i].variants
         return sorted(self.rectangles, key=lambda rect: (
-        rect.x, rect.y, rect.width, rect.height))
+            rect.x, rect.y, rect.width, rect.height))
 
     def print_solution(self):
         rects = self.solve()
