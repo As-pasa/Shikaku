@@ -37,13 +37,13 @@ class Rectangle:
         return self.x == other.x and self.y == other.y and self.height == other.height and self.width == other.width
 
 
-class AnchorTable:
+class AnchorsFileReader:
     def __init__(self, data: str):
         self.grid = []
         self.size = len(data.splitlines())
-        self.anchors = AnchorTable.get_anchor(self, data)
+        self.anchors = AnchorsFileReader.create_anchors(self, data)
 
-    def get_anchor(self, content: str):
+    def create_anchors(self, content: str):
         anchors = []
         lines = content.splitlines()
         data = [[value for value in map(int, row.split())]

@@ -1,12 +1,13 @@
 import time
 
 from models import SolvingGrid
-from models import AnchorTable
+from models import AnchorsFileReader
 from models import AnchorVariantsResolver
 
 
 class BoardSolution:
-    def __init__(self, table: AnchorTable):
+    """Класс, решающий доску с головоломкой Shikaku"""
+    def __init__(self, table: AnchorsFileReader):
         self.anchors = table.anchors
         self.size = table.size
         self.grid = SolvingGrid(self.size, self.anchors)
@@ -21,24 +22,21 @@ class BoardSolution:
             solvers.append(solver)
 
         while solvers:
-            for solver in solvers+finalized:
+            for solver in solvers + finalized:
                 solver.mark_reachable()
 
-
             for solver in solvers:
-
                 rects = solver.filter_existing_variants()
-
                 solver.variants = rects
                 if len(rects) == 1:
-
                     finalized.append(solver)
                     solvers.remove(solver)
             self.grid.clear_all_reachable()
 
         for i in range(len(finalized)):
             self.rectangles += finalized[i].variants
-        return sorted(self.rectangles,key=lambda rect: (rect.x,rect.y,rect.width,rect.height))
+        return sorted(self.rectangles, key=lambda rect: (
+        rect.x, rect.y, rect.width, rect.height))
 
     def print_solution(self):
         rects = self.solve()
@@ -51,5 +49,10 @@ class BoardSolution:
             n += 1
         res = ''
         for line in solve_grid:
-            res += f'{" ".join(map(str, line))}\n'
+            if len(rects) < 10:
+                res += f'{" ".join(map(str, line))}\n'
+            else:
+                for cell in line:
+                    res += f'{cell} ' if len(str(cell)) > 1 else f'0{cell} '
+                res = res[:-1] + '\n'
         return print(res)

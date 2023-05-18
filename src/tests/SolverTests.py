@@ -1,7 +1,7 @@
 import unittest
 from src.models import AnchorVariantsResolver, Rectangle, SolvingGrid
 from src.solution import BoardSolution
-from src.models import AnchorTable
+from src.models import AnchorsFileReader
 
 
 # from ..models import Anchor, AnchorVariantsResolver, Rectangle, SolvingGrid
@@ -9,7 +9,7 @@ from src.models import AnchorTable
 
 class MyTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.table = AnchorTable(
+        self.table = AnchorsFileReader(
             '2 0 4 0 0\n'
             '4 3 0 2 2\n'
             '0 0 0 2 0\n'
