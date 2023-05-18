@@ -1,6 +1,6 @@
 import dataclasses
 
-from utils.mathUtils import get_divider_pairs
+from src.utils.mathUtils import get_divider_pairs
 
 
 @dataclasses.dataclass
