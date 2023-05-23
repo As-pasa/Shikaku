@@ -8,7 +8,7 @@ from models import Rectangle
 
 
 class Window(QMainWindow):
-    """Интерактивная доска с головоломкой Хитори"""
+    """Интерактивная доска с головоломкой Shikaku"""
 
     FILE_NAME = 'game_state.pickle'
 
@@ -45,7 +45,7 @@ class Window(QMainWindow):
         clean_action = QAction("Clear board", self)
         clean_action.setShortcut('Ctrl+C')
         clean_action.setStatusTip('Clear application')
-        clean_action.triggered.connect(self.parent().clean_board)
+        clean_action.triggered.connect(self.parent().clear_board)
 
         exit_action = QAction("Exit", self)
         exit_action.setShortcut('Ctrl+E')
@@ -108,6 +108,7 @@ class Window(QMainWindow):
                 )
             else:
                 self.parent().delete_rectangle(painter)
+                self.mPixmap = QPixmap()
             self.mPixmap = pixmap
             self.mModified = False
 

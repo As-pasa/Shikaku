@@ -4,21 +4,21 @@ import os
 
 from window import Window
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt, QCoreApplication
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPen
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, \
-    QPushButton, QMessageBox, QFileDialog, QAction, QInputDialog, QLineEdit, \
-    QFormLayout, QDialogButtonBox, QGridLayout, QFrame
+    QPushButton, QMessageBox, QFileDialog, QAction
 
 from check_files import Checking
 from models import AnchorsFileReader, Rectangle
 from solution import BoardSolution
+from RiddleGenerator import DivideRiddleGenerator
 
 
 class Game(QMainWindow):
     """Основное окно игры с базовыми кнопками выбора формата доски"""
 
-    COLOR = {0: 'white', 1: 'black', 2: '#c4c9cc'}
+    ANCHOR_COUNT = {5: 6, 10: 17, 15: 27}
     FILE_NAME = 'game_state.pickle'
 
     def __init__(self):
@@ -101,7 +101,7 @@ class Game(QMainWindow):
 
         self.generation = QPushButton("Generate", self)
         self.generation.setGeometry(300, 300, 175, 40)
-        self.generation.clicked.connect(self.generate_board)
+        self.generation.clicked.connect(self.choose_size)
 
         self.offline = QPushButton("Offline", self)
         self.offline.setGeometry(475, 300, 175, 40)
@@ -111,6 +111,7 @@ class Game(QMainWindow):
             self.resume.clicked.connect(self.load_game)
 
     def choose_size(self):
+        """Выводит окно выбора размера доски при решении онлайн"""
         msg = QMessageBox()
         msg.setWindowTitle("Size choice")
         msg.setText("You should choice a size of board")
@@ -120,15 +121,19 @@ class Game(QMainWindow):
         button_y = msg.button(QMessageBox.Yes)
         button_y.setText('5')
         button_n = msg.button(QMessageBox.No)
-        button_n.setText('8')
+        button_n.setText('10')
         button_c = msg.button(QMessageBox.Cancel)
-        button_c.setText('12')
+        button_c.setText('15')
         msg.buttonClicked.connect(self.generate_board)
         msg.exec_()
 
     def generate_board(self, button: QMessageBox):
         """Формирует случайную доску для решения"""
-        pass
+        self.size = int(button.text())
+        rectangle = DivideRiddleGenerator(self.size,
+                                          Game.ANCHOR_COUNT[self.size])
+        rectangle.compute()
+        self.set_file(rectangle.convert_to_string())
 
     def choose_file(self):
         """Выводит окно подтверждения загрузки файла с доской"""
@@ -137,10 +142,10 @@ class Game(QMainWindow):
         msg.setText("You should choose your file")
         msg.setIcon(QMessageBox.Information)
         msg.setStandardButtons(QMessageBox.Open | QMessageBox.Cancel)
-        msg.buttonClicked.connect(self.set_file)
+        msg.buttonClicked.connect(self.get_file)
         msg.exec_()
 
-    def set_file(self, button: QMessageBox):
+    def get_file(self, button: QMessageBox):
         """Загружает файл с данными при решении оффлайн"""
         if button.text() == 'Open':
             file, _ = QFileDialog.getOpenFileName(self,
@@ -148,21 +153,24 @@ class Game(QMainWindow):
                                                   './',
                                                   'Text Files (*.txt)')
             with open(file, 'r') as f:
-                file_content = f.read()
-            msg = QMessageBox()
-            msg.setWindowTitle("WARNING")
-            msg.setIcon(QMessageBox.Warning)
-            msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Close)
-            if not Checking.check_file_content(file_content):
-                msg.setText("The file should contain only numbers!")
-                msg.exec_()
-            elif not Checking.check_max_element(file_content):
-                msg.setText(
-                    "Each element must be less than square of board")
-                msg.exec_()
-            else:
-                self.data = file_content
-                self.help_method()
+                content = f.read()
+            self.set_file(content)
+
+    def set_file(self, file_content: str):
+        msg = QMessageBox()
+        msg.setWindowTitle("WARNING")
+        msg.setIcon(QMessageBox.Warning)
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Close)
+        if not Checking.check_file_content(file_content):
+            msg.setText("The file should contain only numbers!")
+            msg.exec_()
+        elif not Checking.check_max_element(file_content):
+            msg.setText(
+                "Each element must be less than square of board")
+            msg.exec_()
+        else:
+            self.data = file_content
+            self.help_method()
 
     def help_method(self):
         """Формирует данные для установки доски"""
@@ -195,7 +203,6 @@ class Game(QMainWindow):
                 button.setGeometry(50 * (1 + j), 50 * (1 + i), 50, 50)
                 button.setFont(QFont('Times', 15))
                 position = (50 * (1 + j), 50 * (1 + i))
-                # TODO неизменяемый тапл, по идее
                 button_status = (button, position)
                 button.clicked.connect(
                     lambda checked, btn=button_status: self.set_rectangle(btn))
@@ -205,7 +212,7 @@ class Game(QMainWindow):
             self.window.mModified = True
             self.window.restored = True
 
-    def clean_board(self):
+    def clear_board(self):
         """Возвращает доску к значениям по умолчанию"""
         self.window.rectangle = [0, 0]
         self.window.restored = False
@@ -277,9 +284,7 @@ class Game(QMainWindow):
                 self.window.mModified = True
                 self.is_pressed = False
         else:
-            print(f'for delete: {self.window.deleting_rect}')
             self.window.mModified = True
-        print(f'final_rectangles: {self.window.rectangles}')
 
     def delete_rectangle(self, qp):
         pen = QPen(Qt.white, 3, Qt.SolidLine)
