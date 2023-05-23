@@ -53,6 +53,8 @@ class DivideRiddleGenerator:
 
     @staticmethod
     def select_index(size: int) -> int:
+        if size <= 2:
+            return 1
         return randint(1, size - 1)
 
     def compute(self) -> None:
@@ -72,7 +74,7 @@ class DivideRiddleGenerator:
 
     def convert_to_string(self):
         matr = [[0 for j in range(self.dec_size)] for i in range(self.dec_size)]
-        for i in self.rectangles:
+        for i in self.rectangles + self.finalized:
             x, y = choice([i for i in i.get_inner_points()])
             sz = i.height * i.width
             matr[y][x] = sz
@@ -82,7 +84,8 @@ class DivideRiddleGenerator:
             st += kk + "\n"
         return st
 
+
 # use example
-# k = DivideRiddleGenerator(5, 7)
-# k.compute()
-# print(k.convert_to_string())
+k = DivideRiddleGenerator(5, 12)
+k.compute()
+print(k.convert_to_string())
