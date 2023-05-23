@@ -4,10 +4,11 @@ import os
 
 from window import Window
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt, QSettings
+from PyQt5.QtCore import Qt, QCoreApplication
 from PyQt5.QtGui import QFont, QPen
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, \
-    QPushButton, QMessageBox, QFileDialog, QAction
+    QPushButton, QMessageBox, QFileDialog, QAction, QInputDialog, QLineEdit, \
+    QFormLayout, QDialogButtonBox, QGridLayout, QFrame
 
 from check_files import Checking
 from models import AnchorsFileReader, Rectangle
@@ -109,7 +110,23 @@ class Game(QMainWindow):
         if os.path.exists(self.FILE_NAME):
             self.resume.clicked.connect(self.load_game)
 
-    def generate_board(self):
+    def choose_size(self):
+        msg = QMessageBox()
+        msg.setWindowTitle("Size choice")
+        msg.setText("You should choice a size of board")
+        msg.setIcon(QMessageBox.Information)
+        msg.setStandardButtons(
+            QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+        button_y = msg.button(QMessageBox.Yes)
+        button_y.setText('5')
+        button_n = msg.button(QMessageBox.No)
+        button_n.setText('8')
+        button_c = msg.button(QMessageBox.Cancel)
+        button_c.setText('12')
+        msg.buttonClicked.connect(self.generate_board)
+        msg.exec_()
+
+    def generate_board(self, button: QMessageBox):
         """Формирует случайную доску для решения"""
         pass
 
