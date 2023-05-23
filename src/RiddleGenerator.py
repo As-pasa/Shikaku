@@ -1,5 +1,5 @@
 from models import Rectangle
-from random import randint, choices
+from random import randint, choices, choice
 
 
 class DivideRiddleGenerator:
@@ -32,7 +32,6 @@ class DivideRiddleGenerator:
 
         real_scatter = min(len(self.rectangles) - 1, self.max_scatter - 1)
         if real_scatter > 0:
-            # print(len(range(0,real_scatter)),len( [0.4, 0.3, 0.2][:real_scatter]))
             selected = choices([i for i in range(0, real_scatter)], [0.4, 0.3, 0.2][:real_scatter])[0]
             return selected
         return 0
@@ -53,11 +52,11 @@ class DivideRiddleGenerator:
                        [0.7, 0.3])[0]
 
     @staticmethod
-    def select_index(size: int):
+    def select_index(size: int) -> int:
         return randint(1, size - 1)
 
-    def compute(self):
-        while self.rectangles and len(self.finalized+self.rectangles) < self.anchorCount:
+    def compute(self) -> None:
+        while self.rectangles and len(self.finalized + self.rectangles) < self.anchorCount:
             ind = self.select_rectangle_to_divide()
             axis = self.select_axis(self.rectangles[ind])
             if axis == 2:
@@ -71,7 +70,19 @@ class DivideRiddleGenerator:
                 sp = self.select_index(self.rectangles[ind].width)
             self.subdivide_from_index(ind, axis, sp)
 
-#use example
-#k = DivideRiddleGenerator(5, 7)
-#k.compute()
+    def convert_to_string(self):
+        matr = [[0 for j in range(self.dec_size)] for i in range(self.dec_size)]
+        for i in self.rectangles:
+            x, y = choice([i for i in i.get_inner_points()])
+            sz = i.height * i.width
+            matr[y][x] = sz
+        st = ""
+        for i in matr:
+            kk = " ".join([str(p) for p in i])
+            st += kk + "\n"
+        return st
 
+# use example
+# k = DivideRiddleGenerator(5, 7)
+# k.compute()
+# print(k.convert_to_string())
