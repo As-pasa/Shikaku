@@ -1,7 +1,7 @@
 import os
 
 from PyQt5.QtCore import QSettings, Qt
-from PyQt5.QtWidgets import QMainWindow, QAction, QMessageBox, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QAction, QMessageBox
 from PyQt5.QtGui import QPainter, QPixmap
 
 from models import Rectangle
@@ -27,11 +27,6 @@ class Window(QMainWindow):
 
     def set_menuBar(self):
         """Устанавливает базовые кнопки для взаимодействия"""
-        new_game_action = QAction("Start new game", self)
-        new_game_action.setShortcut('Ctrl+N')
-        new_game_action.setStatusTip('Start new game with similar size')
-        new_game_action.triggered.connect(self.start_new_game)
-
         check_action = QAction("Check solution", self)
         check_action.setShortcut('Ctrl+S')
         check_action.setStatusTip("Check your solution")
@@ -50,19 +45,12 @@ class Window(QMainWindow):
         self.statusBar()
 
         menubar = self.menuBar()
-        file_menu = menubar.addMenu('&New game')
-        file_menu.addAction(new_game_action)
         file_menu = menubar.addMenu('&Check')
         file_menu.addAction(check_action)
         file_menu = menubar.addMenu('&Solution')
         file_menu.addAction(solution_action)
         file_menu = menubar.addMenu('&Exit')
         file_menu.addAction(exit_action)
-
-    def start_new_game(self):
-        """Создает окно с доской того же размера, что и предыдущая"""
-        self.close()
-        self.parent().create_window(QPushButton(), 'similar')
 
     def delete_saving(self):
         """Удаляет данные о сохраненной доске за ненадобностью"""

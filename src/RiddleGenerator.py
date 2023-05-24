@@ -3,7 +3,7 @@ from random import randint, choices, choice
 
 
 class DivideRiddleGenerator:
-    ANCHOR_COUNT = {5: 6, 10: 17, 15: 27}
+    ANCHOR_COUNT = {5: 9, 10: 19, 15: 31}
 
     def __init__(self, deck_size: int, preferred_anchor_count: int):
         self.dec_size: int = deck_size
