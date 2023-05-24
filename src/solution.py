@@ -1,8 +1,6 @@
-import time
-
-from src.models import SolvingGrid
-from src.models import AnchorsFileReader
-from src.models import AnchorVariantsResolver
+from models import SolvingGrid
+from models import AnchorsFileReader
+from models import AnchorVariantsResolver
 
 
 class BoardSolution:

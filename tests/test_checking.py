@@ -1,5 +1,5 @@
 import unittest
-from src.check_files import *
+from src.check_files import Checking
 
 
 class ChecksTest(unittest.TestCase):
@@ -7,13 +7,13 @@ class ChecksTest(unittest.TestCase):
         grid = 'a 0 2\n' \
                '0 0 0\n' \
                '3 0 2'
-        self.assertEqual(check_file_content(grid), False)
+        self.assertEqual(Checking.check_file_content(grid), False)
 
     def test_max(self):
-        grid = '10 0 2\n' \
+        grid = '3 0 2\n' \
                '0 0 0\n' \
                '3 0 2'
-        self.assertEqual(check_max_element(grid), False)
+        self.assertEqual(Checking.check_max_element(grid), False)
 
 
 if __name__ == '__main__':
