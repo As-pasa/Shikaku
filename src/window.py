@@ -42,11 +42,6 @@ class Window(QMainWindow):
         solution_action.setStatusTip("View a final solution")
         solution_action.triggered.connect(self.parent().set_solution)
 
-        clean_action = QAction("Clear board", self)
-        clean_action.setShortcut('Ctrl+C')
-        clean_action.setStatusTip('Clear application')
-        clean_action.triggered.connect(self.parent().clear_board)
-
         exit_action = QAction("Exit", self)
         exit_action.setShortcut('Ctrl+E')
         exit_action.setStatusTip("Exit from game")
@@ -57,8 +52,6 @@ class Window(QMainWindow):
         menubar = self.menuBar()
         file_menu = menubar.addMenu('&New game')
         file_menu.addAction(new_game_action)
-        file_menu = menubar.addMenu('&Restart')
-        file_menu.addAction(clean_action)
         file_menu = menubar.addMenu('&Check')
         file_menu.addAction(check_action)
         file_menu = menubar.addMenu('&Solution')

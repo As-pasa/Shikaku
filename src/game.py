@@ -17,8 +17,6 @@ from RiddleGenerator import DivideRiddleGenerator
 
 class Game(QMainWindow):
     """Основное окно игры с базовыми кнопками выбора формата доски"""
-
-    ANCHOR_COUNT = {5: 6, 10: 17, 15: 27}
     FILE_NAME = 'game_state.pickle'
 
     def __init__(self):
@@ -131,7 +129,7 @@ class Game(QMainWindow):
         """Формирует случайную доску для решения"""
         self.size = int(button.text())
         rectangle = DivideRiddleGenerator(self.size,
-                                          Game.ANCHOR_COUNT[self.size])
+                                          DivideRiddleGenerator.ANCHOR_COUNT[self.size])
         rectangle.compute()
         self.set_file(rectangle.convert_to_string())
 
@@ -212,13 +210,6 @@ class Game(QMainWindow):
             self.window.mModified = True
             self.window.restored = True
 
-    def clear_board(self):
-        """Возвращает доску к значениям по умолчанию"""
-        self.window.rectangle = [0, 0]
-        self.window.restored = False
-        self.window.deleting_rect = self.window.rectangles
-        self.window.mModified = True
-
     def clean_window(self):
         """Удаляет данные окна с доской"""
         self.window = Window(self)
@@ -229,7 +220,6 @@ class Game(QMainWindow):
         """Сверяет решение пользователя и правильное решение доски"""
         user_result = self.convert_rectangle(self.window.rectangles)
         program_result = BoardSolution(AnchorsFileReader(self.data)).solve()
-        print(f'program: {program_result},\n user: {user_result}')
         msg = QMessageBox()
         msg.setWindowTitle("Results")
         msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
