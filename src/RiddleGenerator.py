@@ -18,7 +18,6 @@ class DivideRiddleGenerator:
                   subdivision_index: int) -> list[Rectangle]:
         if subdivision_axis == 0:
             if subdivision_index >= rect.width:
-                print(1)
                 return [rect]
             rect1 = Rectangle(rect.x, rect.y, subdivision_index, rect.height)
             rect2 = Rectangle(rect.x + subdivision_index, rect.y,
@@ -26,7 +25,6 @@ class DivideRiddleGenerator:
             return [rect1, rect2]
         if subdivision_axis == 1:
             if subdivision_index >= rect.height:
-                print(1)
                 return [rect]
             rect1 = Rectangle(rect.x, rect.y, rect.width, subdivision_index)
             rect2 = Rectangle(rect.x, rect.y + subdivision_index, rect.width,
@@ -48,7 +46,12 @@ class DivideRiddleGenerator:
                              slice_index: int) -> None:
         rect = self.rectangles[index]
         self.rectangles.remove(rect)
-        self.rectangles += self.subdivide(rect, slice_axis, slice_index)
+        kk = self.subdivide(rect, slice_axis, slice_index)
+        for i in kk:
+            if i.height * i.width == 1:
+                self.rectangles.append(rect)
+                return
+        self.rectangles += kk
 
     @staticmethod
     def select_axis(rect: Rectangle) -> int:
