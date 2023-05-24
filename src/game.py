@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, \
 from check_files import Checking
 from models import AnchorsFileReader, Rectangle, SolutionChecker
 from solution import BoardSolution
-from RiddleGenerator import DivideRiddleGenerator
+from riddle_generator import DivideRiddleGenerator
 
 
 class Game(QMainWindow):
