@@ -29,7 +29,6 @@ class SolverTest(unittest.TestCase):
 
     def test_rect_resolving(self):
         ans = BoardSolution(self.table).solve()
-        b = BoardSolution(self.table).print_solution()
 
         z = sorted([Rectangle(x=3, y=3, width=2, height=1),
                     Rectangle(x=0, y=0, width=2, height=1),
