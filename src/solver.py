@@ -1,47 +1,45 @@
+import argparse
+import logging
 import os
-import sys
+import warnings
 
-from parse_argument import *
-from check_files import *
-from models import AnchorTable
-from dataclasses import dataclass
-from typing import ClassVar
-
-
-@dataclass
-class ParserArguments:
-    PARSER: ClassVar = argparse.ArgumentParser("Shikaku solver")
-    SUBPARSER: ClassVar = \
-        PARSER.add_subparsers(title="Variants",
-                              dest="command",
-                              description="Solution offline Shikaku")
-    SUBPARSER.required = True
-    preparation_for_offline_solution(SUBPARSER)
-    ARGS = PARSER.parse_args()
+from check_files import Checking
+from models import AnchorsFileReader
+from solution import BoardSolution
+from parser import ParserArguments
+from RiddleGenerator import DivideRiddleGenerator
 
 
-class Solver:
-    @staticmethod
-    def solving_shikaku():
-        args = ParserArguments.ARGS
-        match args.command:
-            case "offline":
-                if not os.path.exists(args.file):
-                    print("Need to transfer an existing file!")
-                    sys.exit(1)
+def solve_shikaku():
+    args = ParserArguments().ARGS
+    match args.command:
+        case "online":
+            board = DivideRiddleGenerator(args.size,
+                                          DivideRiddleGenerator.ANCHOR_COUNT[args.size])
+            board.compute()
+            board = board.convert_to_string()
+            print(board)
+            anchors = BoardSolution(AnchorsFileReader(board))
+            anchors.print_solution()
+        case "offline":
+            if not os.path.exists(args.file):
+                raise argparse.ArgumentTypeError("Need to transfer an existing "
+                                                 "file!"
+                                                 )
+            with open(args.file, 'r') as file:
+                file_content = file.read()
+                if not Checking.check_file_content(file_content):
+                    raise argparse.ArgumentTypeError("The file should contain "
+                                                     "only numbers!"
+                                                     )
 
-                with open(args.file, 'r') as file:
-                    file_content = file.read()
-                    if not check_file_content(file_content):
-                        print("The file should contain only numbers!")
-                        sys.exit(1)
-
-                    if not check_size_board(file_content):
-                        print("The matrix in the file must be square!")
-                        sys.exit(1)
-                    anchors = AnchorTable(file_content)
-                    print(1) #вызов и принт функции, которая решает доску
+                if not Checking.check_max_element(file_content):
+                    raise argparse.ArgumentTypeError("Each element must be "
+                                                     "less than square of board"
+                                                     )
+                anchors = BoardSolution(AnchorsFileReader(file_content))
+                anchors.print_solution()
 
 
 if __name__ == '__main__':
-    Solver.solving_shikaku()
+    solve_shikaku()
