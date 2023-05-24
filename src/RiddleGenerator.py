@@ -84,8 +84,7 @@ class DivideRiddleGenerator:
             st += kk + "\n"
         return st
 
-
 # use example
-k = DivideRiddleGenerator(5, 12)
-k.compute()
-print(k.convert_to_string())
+# k = DivideRiddleGenerator(5, 12)
+# k.compute()
+# print(k.convert_to_string())
