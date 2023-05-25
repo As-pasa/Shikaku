@@ -16,6 +16,8 @@ class DivideRiddleGenerator:
     @staticmethod
     def subdivide(rect: Rectangle, subdivision_axis: int,
                   subdivision_index: int) -> list[Rectangle]:
+        """Принимая все заранее сгенерированные параметры проводит разбиение прямоугольника.
+         В случае невалидных аргументов возвращает исходный прямоугольник"""
         if subdivision_axis == 0:
             if subdivision_index >= rect.width:
                 return [rect]
@@ -32,6 +34,8 @@ class DivideRiddleGenerator:
             return [rect1, rect2]
 
     def select_rectangle_to_divide(self) -> int:
+        """Выбирает из списка один из прямоугольников.
+        В большинстве случаев выбирается самый круный, но с небольшим шансом могут быть выбраны и другие"""
         self.rectangles = sorted(self.rectangles,
                                  key=lambda x: x.width * x.height, reverse=True)
 
@@ -44,6 +48,7 @@ class DivideRiddleGenerator:
 
     def subdivide_from_index(self, index: int, slice_axis: int,
                              slice_index: int) -> None:
+        """Обертка над основной статической функцией, выполняет доп. проверки и модифицирует текущее состояние"""
         rect = self.rectangles[index]
         self.rectangles.remove(rect)
         kk = self.subdivide(rect, slice_axis, slice_index)
@@ -55,6 +60,7 @@ class DivideRiddleGenerator:
 
     @staticmethod
     def select_axis(rect: Rectangle) -> int:
+        """Выбирает ось деления прямоугольника"""
         if rect.height * rect.width <= 4:
             return 2
 
@@ -66,11 +72,13 @@ class DivideRiddleGenerator:
 
     @staticmethod
     def select_index(size: int) -> int:
+        """Выбирает, по какому измерению проводить разбиение"""
         if size <= 2:
             return 1
         return randint(1, size - 1)
 
     def compute(self) -> None:
+        """Формирует финальное разбиение"""
         while self.rectangles and len(
                 self.finalized + self.rectangles) < self.anchorCount:
             ind = self.select_rectangle_to_divide()
@@ -87,6 +95,7 @@ class DivideRiddleGenerator:
             self.subdivide_from_index(ind, axis, sp)
 
     def convert_to_string(self):
+        """Подготавливает строковое представление"""
         matr = [[0 for j in range(self.dec_size)] for i in range(self.dec_size)]
         for i in self.rectangles + self.finalized:
             x, y = choice([i for i in i.get_inner_points()])
