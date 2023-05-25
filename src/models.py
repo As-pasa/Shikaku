@@ -68,26 +68,26 @@ class SolvingGrid:
         for i in anchors:
             self.mark_occupied(i.x, i.y)
 
-    def is_cell_occupied(self, x, y) -> bool:
+    def is_cell_occupied(self, x:int, y:int) -> bool:
         """Определяет, занята ли указанная точка"""
         return self.matrix[y * self.size + x].is_occupied
 
-    def get_anchors_that_reach_cell(self, x, y):
+    def get_anchors_that_reach_cell(self, x:int, y:int)->[Anchor]:
         """Возвращает список якорей, которые потенциально дотягиваются
         до точки"""
         return self.matrix[y * self.size + x].reachable_by
 
-    def mark_occupied(self, x, y) -> None:
+    def mark_occupied(self, x:int, y:int) -> None:
         """Помечает указанную точку как занятую, что в дальнейшем запрещает
         размещать здесь другие прямоугольники"""
         self.matrix[y * self.size + x].is_occupied = True
 
-    def mark_reachable_by(self, x, y, anchor: Anchor):
+    def mark_reachable_by(self, x:int, y:int, anchor: Anchor)->None:
         """Помечает указанную точку как потенциально достижимую указанным
         якорем"""
         self.matrix[y * self.size + x].reachable_by.append(anchor)
 
-    def clear_all_reachable(self):
+    def clear_all_reachable(self)->None:
         """Убирает пометки Reachable во всех клетках, подготавливает поле к
         следующей итерации отсеивания решений"""
         for i in self.matrix:
@@ -113,7 +113,7 @@ class SolvingGrid:
             0 <= rect.x + rect.width - 1 < self.size and \
             0 <= rect.y + rect.height - 1 < self.size
 
-    def print(self):
+    def print(self)->Noneп:
         """Отладочная функция для вывода состояния матрицы на консоль"""
         ans = ""
         for i in range(len(self.matrix)):
