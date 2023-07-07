@@ -7,7 +7,7 @@ from check_files import Checking
 from models import AnchorsFileReader
 from solution import BoardSolution
 from parser import ParserArguments
-from RiddleGenerator import DivideRiddleGenerator
+from riddle_generator import DivideRiddleGenerator
 
 
 def solve_shikaku():

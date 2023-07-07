@@ -10,9 +10,9 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, \
     QPushButton, QMessageBox, QFileDialog, QAction
 
 from check_files import Checking
-from models import AnchorsFileReader, Rectangle
+from models import AnchorsFileReader, Rectangle, SolutionChecker
 from solution import BoardSolution
-from RiddleGenerator import DivideRiddleGenerator
+from riddle_generator import DivideRiddleGenerator
 
 
 class Game(QMainWindow):
@@ -177,10 +177,9 @@ class Game(QMainWindow):
         self.set_board(person_data)
 
     def create_window(self, button: QMessageBox, flag='new'):
-        """Загружает данные о доске с сайта при решении онлайн"""
+        """Загружает данные о доске при решении онлайн"""
         if flag == 'new':
             self.size = int(button.text())
-        # self.data = ParserBoard(self.size).parse_board() #generate a new board
         self.help_method()
 
     def set_board(self, person_data):
@@ -206,7 +205,7 @@ class Game(QMainWindow):
                     lambda checked, btn=button_status: self.set_rectangle(btn))
                 self.table.append(button_status)
         self.window.show()
-        if flag != "new":
+        if flag != "new" and flag != "similar":
             self.window.mModified = True
             self.window.restored = True
 
@@ -218,12 +217,13 @@ class Game(QMainWindow):
 
     def check_solution(self):
         """Сверяет решение пользователя и правильное решение доски"""
-        user_result = self.convert_rectangle(self.window.rectangles)
-        program_result = BoardSolution(AnchorsFileReader(self.data)).solve()
         msg = QMessageBox()
         msg.setWindowTitle("Results")
         msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        if user_result == program_result:
+        print(self.convert_rectangle(self.window.rectangles))
+        if SolutionChecker(AnchorsFileReader(self.data).anchors,
+                           self.convert_rectangle(self.window.rectangles),
+                           self.size).check():
             self.window.finished = True
             msg.setText(
                 "Congratulation! You win! Wanna you start a new game?")
@@ -245,8 +245,8 @@ class Game(QMainWindow):
     @staticmethod
     def convert_rectangle(rectangles):
         """Приводит решение пользователя к сравнимому формату"""
-        rectangles = [Rectangle(rect.x / 50 - 1, rect.y / 50 - 1,
-                                rect.width / 50, rect.height / 50)
+        rectangles = [Rectangle(int(rect.x / 50 - 1), int(rect.y / 50 - 1),
+                                int(rect.width / 50), int(rect.height / 50))
                       for rect in rectangles]
         return sorted(rectangles, key=lambda rect: (rect.x, rect.y,
                                                     rect.width, rect.height))

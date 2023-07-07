@@ -15,9 +15,11 @@ class BoardSolution:
     def solve(self):
         solvers = []
         finalized = []
+        variants_to_resolve=0
         for i in self.anchors:
             solver = AnchorVariantsResolver(i, self.grid)
             solver.variants = solver.get_rectangle_variants()
+            variants_to_resolve+=len(solver.variants)
             solvers.append(solver)
 
         while solvers:
@@ -31,7 +33,11 @@ class BoardSolution:
                     finalized.append(solver)
                     solvers.remove(solver)
             self.grid.clear_all_reachable()
-
+            n_variant_count = sum([len(i.variants) for i in solvers])
+            if n_variant_count==variants_to_resolve:
+                solvers[0].variants.pop(0)
+                n_variant_count-=1
+            variants_to_resolve=n_variant_count
         for i in range(len(finalized)):
             self.rectangles += finalized[i].variants
         return sorted(self.rectangles, key=lambda rect: (
